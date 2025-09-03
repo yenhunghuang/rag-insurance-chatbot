@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  rag-chatbot:
+    build: 
+      context: .
+      target: production
+    container_name: rag-insurance-chatbot
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+    volumes:
+      # Mount source code for development
+      - ./src:/app/src
+      - ./data:/app/data
+      - ./logs:/app/logs
+      # Persist data and indices
+      - rag_data:/app/data/indices
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Development service with live reloading
+  rag-chatbot-dev:
+    build: 
+      context: .
+      target: production
+    container_name: rag-insurance-chatbot-dev
+    ports:
+      - "8001:8000"
+    environment:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./scripts:/app/scripts
+    env_file:
+      - .env
+    command: ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    profiles:
+      - dev
+
+  # Streamlit frontend service
+  streamlit:
+    build: 
+      context: .
+      target: production
+    container_name: rag-streamlit-frontend
+    ports:
+      - "8501:8501"
+    environment:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./frontend:/app/frontend
+      - ./src:/app/src
+    command: ["streamlit", "run", "frontend/app.py", "--server.address", "0.0.0.0"]
+    depends_on:
+      - rag-chatbot
+    profiles:
+      - frontend
+
+volumes:
+  rag_data:
+    driver: local
+
+networks:
+  default:
+    name: rag-network
