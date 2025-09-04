@@ -41,6 +41,15 @@ class QueryResult:
             raise ValueError("Documents and similarity_scores must have the same length")
 
 
+@dataclass 
+class DocumentMatch:
+    """Represents a single document match from a query."""
+    
+    document: Document
+    score: float
+    rank: int
+
+
 @dataclass
 class ChatbotResponse:
     """Represents a complete chatbot response."""
