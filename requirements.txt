@@ -1,5 +1,5 @@
 # AI/ML Core Dependencies
-openai==1.7.2
+openai==1.105.0
 numpy==1.24.3
 pandas==2.0.3
 pinecone-client==3.0.0

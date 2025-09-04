@@ -116,15 +116,15 @@
    python -m src.main
    
    # 訪問API文檔: http://localhost:8000/docs
-   # 健康檢查: http://localhost:8000/health
+   # 健康檢查: http://localhost:8000/api/v1/health
    ```
 
 5. **網頁界面 (可選)**
    ```bash
    # 啟動Streamlit演示界面
-   streamlit run streamlit_demo.py
+   STREAMLIT_SERVER_EMAIL="" streamlit run streamlit_demo.py --server.headless=true
    
-   # 訪問: http://localhost:8501
+   # 訪問: http://localhost:8501 (或顯示的 Network URL)
    ```
 
 ## 📖 使用指南
@@ -135,7 +135,7 @@
 
 ```bash
 # 健康檢查
-curl -X GET "http://localhost:8000/health"
+curl -X GET "http://localhost:8000/api/v1/health"
 
 # 查詢保險條款
 curl -X POST "http://localhost:8000/api/v1/query" \
@@ -165,7 +165,7 @@ response = requests.post(
 
 result = response.json()
 print(f"回答: {result['answer']}")
-print(f"信心度: {result['confidence_score']}")
+print(f"信心度: {result['confidence']}")
 print(f"來源文檔: {len(result['sources'])}")
 ```
 

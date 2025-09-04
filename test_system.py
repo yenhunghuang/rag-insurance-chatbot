@@ -86,7 +86,7 @@ def main():
                 print(f"   ✅ Response generated")
                 print(f"      - Answer length: {len(response.answer)} characters")
                 print(f"      - Sources found: {len(response.sources)}")
-                print(f"      - Confidence: {response.confidence_score:.2f}")
+                print(f"      - Confidence: {response.confidence:.2f}")
                 print(f"      - Answer preview: {response.answer[:100]}...")
                 
                 if response.sources:

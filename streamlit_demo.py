@@ -10,11 +10,16 @@ import os
 from pathlib import Path
 import time
 import json
+from dotenv import load_dotenv
+
+# Ensure .env is loaded before any imports
+env_path = Path(__file__).parent / ".env"
+load_dotenv(env_path)
 
 # Add src to Python path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from src.config import ConfigFactory, set_config
+from src.config import ConfigFactory, set_config, get_config
 from src.generation import RAGSystem
 
 
@@ -31,8 +36,20 @@ st.set_page_config(
 def initialize_rag_system():
     """Initialize RAG system with caching."""
     try:
+        # Debug: Show environment variables
+        st.write("🔧 **Debug Info - Environment Variables:**")
+        st.write(f"- SIMILARITY_THRESHOLD: {os.getenv('SIMILARITY_THRESHOLD', 'NOT SET')}")
+        st.write(f"- TOP_K: {os.getenv('TOP_K', 'NOT SET')}")
+        st.write(f"- PINECONE_INDEX_NAME: {os.getenv('PINECONE_INDEX_NAME', 'NOT SET')}")
+        
         config = ConfigFactory.load_from_env()
         set_config(config)
+        
+        # Debug: Show loaded configuration
+        st.write("🔧 **Debug Info - Loaded Configuration:**")
+        st.write(f"- retrieval.similarity_threshold: {config.retrieval.similarity_threshold}")
+        st.write(f"- retrieval.top_k: {config.retrieval.top_k}")
+        st.write(f"- pinecone.index_name: {config.pinecone.index_name}")
         
         rag_system = RAGSystem()
         
@@ -41,6 +58,12 @@ def initialize_rag_system():
         if os.path.exists(doc_path):
             result = rag_system.initialize_system(doc_path)
             if result["initialized"]:
+                # Add configuration info to the result
+                result["indexing_results"]["debug_config"] = {
+                    "similarity_threshold": config.retrieval.similarity_threshold,
+                    "top_k": config.retrieval.top_k,
+                    "index_name": config.pinecone.index_name
+                }
                 return rag_system, result["indexing_results"]
             else:
                 return None, {"error": "System initialization failed"}
@@ -70,11 +93,24 @@ def main():
     # Sidebar with system info
     st.sidebar.header("📊 系統資訊")
     
+    # Add cache clear button
+    if st.sidebar.button("🔄 清除緩存並重新載入"):
+        st.cache_resource.clear()
+        st.rerun()
+    
     if "error" not in init_info:
         st.sidebar.success("✅ 系統已就緒")
         st.sidebar.metric("文件片段", init_info.get("total_chunks", 0))
         st.sidebar.metric("向量索引", init_info.get("vectors_indexed", 0))
         st.sidebar.metric("嵌入維度", init_info.get("embedding_dimension", 0))
+        
+        # Debug configuration info
+        debug_config = init_info.get("debug_config", {})
+        if debug_config:
+            st.sidebar.header("🔧 配置資訊")
+            st.sidebar.write(f"相似度閾值: {debug_config.get('similarity_threshold', 'N/A')}")
+            st.sidebar.write(f"檢索數量: {debug_config.get('top_k', 'N/A')}")
+            st.sidebar.write(f"索引名稱: {debug_config.get('index_name', 'N/A')}")
     
     # Sample queries
     st.sidebar.header("💡 範例問題")
@@ -139,7 +175,7 @@ def main():
                 
                 with col2:
                     if show_confidence:
-                        st.metric("信心分數", f"{response.confidence_score:.2f}")
+                        st.metric("信心分數", f"{response.confidence:.2f}")
                 
                 with col3:
                     st.metric("參考來源", len(response.sources))

@@ -12,6 +12,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+from fastapi.encoders import jsonable_encoder
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from ..config import get_config, ConfigurationError
@@ -146,13 +147,15 @@ def create_app() -> FastAPI:
         """Handle HTTP exceptions."""
         logger.error(f"HTTP {exc.status_code}: {exc.detail}")
         
+        error_response = ErrorResponse(
+            error="http_error",
+            message=exc.detail,
+            details={"status_code": exc.status_code}
+        )
+        
         return JSONResponse(
             status_code=exc.status_code,
-            content=ErrorResponse(
-                error="http_error",
-                message=exc.detail,
-                details={"status_code": exc.status_code}
-            ).dict()
+            content=jsonable_encoder(error_response)
         )
     
     @app.exception_handler(RequestValidationError)
@@ -160,13 +163,15 @@ def create_app() -> FastAPI:
         """Handle request validation errors."""
         logger.error(f"Validation error: {exc.errors()}")
         
+        error_response = ErrorResponse(
+            error="validation_error",
+            message="Request validation failed",
+            details={"validation_errors": exc.errors()}
+        )
+        
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content=ErrorResponse(
-                error="validation_error",
-                message="Request validation failed",
-                details={"validation_errors": exc.errors()}
-            ).dict()
+            content=jsonable_encoder(error_response)
         )
     
     @app.exception_handler(RAGSystemError)
@@ -174,13 +179,15 @@ def create_app() -> FastAPI:
         """Handle RAG system errors."""
         logger.error(f"RAG system error: {exc}")
         
+        error_response = ErrorResponse(
+            error="rag_system_error",
+            message=str(exc),
+            details={"error_type": type(exc).__name__}
+        )
+        
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=ErrorResponse(
-                error="rag_system_error",
-                message=str(exc),
-                details={"error_type": type(exc).__name__}
-            ).dict()
+            content=jsonable_encoder(error_response)
         )
     
     @app.exception_handler(ConfigurationError)
@@ -188,13 +195,15 @@ def create_app() -> FastAPI:
         """Handle configuration errors."""
         logger.error(f"Configuration error: {exc}")
         
+        error_response = ErrorResponse(
+            error="configuration_error", 
+            message="System configuration error",
+            details={"error": str(exc)}
+        )
+        
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=ErrorResponse(
-                error="configuration_error", 
-                message="System configuration error",
-                details={"error": str(exc)}
-            ).dict()
+            content=jsonable_encoder(error_response)
         )
     
     @app.exception_handler(Exception)
@@ -202,13 +211,15 @@ def create_app() -> FastAPI:
         """Handle all other exceptions."""
         logger.error(f"Unexpected error: {exc}", exc_info=True)
         
+        error_response = ErrorResponse(
+            error="internal_server_error",
+            message="An unexpected error occurred",
+            details={"error_type": type(exc).__name__}
+        )
+        
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=ErrorResponse(
-                error="internal_server_error",
-                message="An unexpected error occurred",
-                details={"error_type": type(exc).__name__}
-            ).dict()
+            content=jsonable_encoder(error_response)
         )
     
     logger.info("FastAPI application created successfully")

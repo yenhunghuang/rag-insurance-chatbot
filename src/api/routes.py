@@ -200,7 +200,7 @@ async def process_query(
                 }
                 for src in response.sources
             ],
-            confidence_score=response.confidence_score,
+            confidence=response.confidence,
             metadata=response.metadata
         )
         
@@ -294,7 +294,7 @@ async def stream_query(
                             }
                             for src in final_response.sources
                         ],
-                        "confidence_score": final_response.confidence_score,
+                        "confidence": final_response.confidence,
                         "metadata": final_response.metadata
                     }
                     yield f"data: {json.dumps(final_data)}\n\n"
@@ -376,23 +376,3 @@ async def clear_index(rag_system: RAGSystem = Depends(get_rag_system)):
             detail=f"Failed to clear index: {str(e)}"
         )
 
-
-# Error handlers
-@router.exception_handler(ValidationError)
-async def validation_exception_handler(request, exc: ValidationError):
-    """Handle Pydantic validation errors."""
-    return ErrorResponse(
-        error="validation_error",
-        message="Request validation failed",
-        details={"validation_errors": exc.errors()}
-    )
-
-
-@router.exception_handler(RAGSystemError)
-async def rag_system_exception_handler(request, exc: RAGSystemError):
-    """Handle RAG system specific errors."""
-    return ErrorResponse(
-        error="rag_system_error",
-        message=str(exc),
-        details={"error_type": type(exc).__name__}
-    )

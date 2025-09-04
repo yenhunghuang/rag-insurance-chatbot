@@ -73,7 +73,7 @@ class QueryResponse(BaseModel):
     query: str = Field(description="Original user query")
     answer: str = Field(description="Generated response")
     sources: List[SourceInfo] = Field(description="Source citations")
-    confidence_score: float = Field(
+    confidence: float = Field(
         ge=0.0, 
         le=1.0, 
         description="Response confidence score"
@@ -151,4 +151,4 @@ class StreamingResponse(BaseModel):
     total_length: int = Field(description="Total response length")
     generation_time: float = Field(description="Total generation time in seconds")
     sources: List[SourceInfo] = Field(description="Source citations")
-    confidence_score: float = Field(description="Response confidence score")
+    confidence: float = Field(description="Response confidence score")

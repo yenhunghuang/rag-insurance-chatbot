@@ -228,7 +228,8 @@ class ResponseGenerator:
             sources=sources,
             confidence=self._calculate_confidence_score(retrieved_documents, llm_response),
             response_time=llm_response.get("response_time", 0.0),
-            model_used=llm_response.get("model", "gpt-3.5-turbo")
+            model_used=llm_response.get("model", "gpt-3.5-turbo"),
+            metadata=metadata
         )
         
         return response

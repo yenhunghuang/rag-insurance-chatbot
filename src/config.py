@@ -54,11 +54,11 @@ class PineconeConfig:
 class RetrievalConfig:
     """Configuration for document retrieval system."""
 
-    top_k: int = 5
-    similarity_threshold: float = 0.8
+    top_k: int = field(default_factory=lambda: int(os.getenv("TOP_K", "5")))
+    similarity_threshold: float = field(default_factory=lambda: float(os.getenv("SIMILARITY_THRESHOLD", "0.8")))
     index_type: str = "pinecone"  # Changed default to pinecone
-    chunk_size: int = 256
-    chunk_overlap: int = 26
+    chunk_size: int = field(default_factory=lambda: int(os.getenv("CHUNK_SIZE", "256")))
+    chunk_overlap: int = field(default_factory=lambda: int(os.getenv("CHUNK_OVERLAP", "26")))
 
 
 @dataclass
@@ -66,8 +66,8 @@ class GenerationConfig:
     """Configuration for LLM response generation."""
 
     model_name: str = "gpt-3.5-turbo"
-    temperature: float = 0.1
-    max_tokens: int = 500
+    temperature: float = field(default_factory=lambda: float(os.getenv("TEMPERATURE", "0.1")))
+    max_tokens: int = field(default_factory=lambda: int(os.getenv("MAX_TOKENS", "500")))
     timeout: int = 30
 
 

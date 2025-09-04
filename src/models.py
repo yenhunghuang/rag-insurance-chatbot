@@ -60,6 +60,7 @@ class ChatbotResponse:
     confidence: float
     response_time: float
     model_used: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=datetime.now)
     
     def __post_init__(self):

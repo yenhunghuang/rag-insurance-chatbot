@@ -107,7 +107,7 @@ def demo_queries(rag_system: RAGSystem):
             end_time = time.time()
             
             print(f"   ⚡ Response time: {end_time - start_time:.2f}s")
-            print(f"   🎯 Confidence: {response.confidence_score:.2f}")
+            print(f"   🎯 Confidence: {response.confidence:.2f}")
             print(f"   📚 Sources: {len(response.sources)} relevant clauses")
             
             # Display answer
