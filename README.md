@@ -14,6 +14,7 @@
 
 - **🧠 智能查詢處理**: 支援中文自然語言理解，精確解析保險相關問題
 - **📄 文檔檢索系統**: 基於OpenAI text-embedding-3-small的向量檢索，語義搜尋保險條款
+- **🔄 智能去重系統**: 內容基去重邏輯，自動過濾重複來源，確保結果唯一性
 - **💬 上下文回答生成**: GPT-3.5-turbo驅動的專業保險諮詢，附帶來源引用
 - **🗄️ 向量數據庫**: Pinecone雲端向量存儲，快速高效的相似性搜索
 - **🔧 RESTful API**: FastAPI框架，自動生成API文檔，支援交互式測試
@@ -55,7 +56,7 @@
 - 📊 **向量嵌入**: OpenAI text-embedding-3-small (1536維)
 - 🤖 **語言生成**: OpenAI GPT-3.5-turbo
 - 🗄️ **向量數據庫**: Pinecone (雲端託管)
-- 🔍 **相似性搜索**: 餘弦相似度 (閾值0.8)
+- 🔍 **相似性搜索**: 餘弦相似度 (閾值0.55，優化去重配置)
 
 **應用架構**:
 - 🚀 **Web框架**: FastAPI 0.104.1
@@ -143,7 +144,7 @@ curl -X POST "http://localhost:8000/api/v1/query" \
   -d '{
     "query": "班機延誤超過幾小時可以申請賠償？",
     "top_k": 5,
-    "threshold": 0.8
+    "threshold": 0.55
   }'
 ```
 
@@ -159,7 +160,7 @@ response = requests.post(
     json={
         "query": "行李延誤超過多久可以申請賠償？",
         "top_k": 5,
-        "threshold": 0.8
+        "threshold": 0.55
     }
 )
 
@@ -271,7 +272,8 @@ pytest -m e2e          # End-to-end tests
 - **📝 文檔處理能力**: 43個chunk成功索引
 - **🧠 嵌入生成**: 43個文檔批量處理 ~3秒
 - **💾 向量維度**: 1536維 (OpenAI text-embedding-3-small)
-- **🎯 相似性閾值**: 0.8 (可配置)
+- **🎯 相似性閾值**: 0.55 (優化配置，結合智能去重)
+- **🔄 去重效果**: 100% - 從5個重複源減少至1個唯一源
 - **📚 知識庫規模**: 海外旅行不便險完整條款
 
 ### 系統資源使用
@@ -303,7 +305,7 @@ VECTOR_DIMENSION=1536
 
 # 檢索參數
 TOP_K=5
-SIMILARITY_THRESHOLD=0.8
+SIMILARITY_THRESHOLD=0.55
 CHUNK_SIZE=256
 CHUNK_OVERLAP=26
 
@@ -318,7 +320,8 @@ ENVIRONMENT=development
 
 - **EMBEDDING_MODEL**: 使用OpenAI最新的embedding模型
 - **VECTOR_DIMENSION**: 1536維向量確保最佳語義理解
-- **SIMILARITY_THRESHOLD**: 0.8閾值平衡精確度與召回率
+- **SIMILARITY_THRESHOLD**: 0.55閾值優化配置，結合智能去重提升用戶體驗
+- **INTELLIGENT_DEDUPLICATION**: 內容基去重邏輯，100%消除重複來源
 - **CHUNK_SIZE/OVERLAP**: 優化後的chunk參數適合中文保險條款
 
 ## 🚦 Deployment

@@ -26,19 +26,20 @@ graph TB
     D --> E[檢索服務 🔍<br/>RetrievalService]
     E --> F[查詢向量化 🧮<br/>OpenAI embedding-3-small]
     F --> G[向量檢索 🗄️\nPinecone cosine]
-    G --> H[Top-K 文檔過濾 📋<br/>閾值 ≥ 0.4，取 5 筆]
+    G --> H[Top-K 文檔過濾 📋<br/>閾值 ≥ 0.55，取 5 筆]
 
     %% 回答生成階段
-    H --> I[回答生成服務 🤖<br/>ResponseGenerator]
-    I --> J[LLM 調用 💬\nGPT-3.5-turbo + Prompt]
-    J --> K[結構化回應 📄<br/>ChatbotResponse]
+    H --> I[智能去重處理 🔄<br/>內容基去重邏輯]
+    I --> J[回答生成服務 🤖<br/>ResponseGenerator]
+    J --> K[LLM 調用 💬\nGPT-3.5-turbo + Prompt]
+    K --> L[結構化回應 📄<br/>ChatbotResponse]
 
     %% 回應處理
-    K --> L[回應後處理 ✨<br/>來源引用 + 信心分數]
-    L --> M[API 回應 📱<br/>QueryResponse]
+    L --> M[回應後處理 ✨<br/>來源引用 + 信心分數]
+    M --> N[API 回應 📱<br/>QueryResponse]
 
     %% 錯誤處理
-    D -.->|💥 處理失敗| N[錯誤處理 🚨<br/>RAGSystemError]
+    D -.->|💥 處理失敗| O[錯誤處理 🚨<br/>RAGSystemError]
 
 
 
@@ -53,9 +54,10 @@ graph TB
     class A userInput
     class B,C validation
     class E,F,G,H retrieval
-    class I,J generation
-    class K,L,M response
-    class N error
+    class I generation
+    class J,K,L generation
+    class M,N response
+    class O error
 ```
 
 ---

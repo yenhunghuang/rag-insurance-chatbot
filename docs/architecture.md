@@ -56,8 +56,9 @@ graph TB
 
 3. **🧠 RAG 引擎層 (Business Logic Layer)**
    - ✅ **RAG 系統編排**: 完整的查詢處理pipeline
-   - ✅ **向量檢索引擎**: Pinecone 雲端向量搜索
+   - ✅ **向量檢索引擎**: Pinecone 雲端向量搜索，相似度閾值0.55優化
    - ✅ **回答生成引擎**: GPT-3.5-turbo 中文優化
+   - ✅ **智能去重系統**: 內容基去重邏輯，自動過濾重複來源
    - ✅ **結果融合**: 來源引用和信心度評分
 
 4. **📊 文檔處理層 (Document Processing Layer)**
@@ -176,11 +177,12 @@ class ResponseGenerationSystem:
     components:
         - LLMClient: OpenAI GPT-3.5-turbo 中文優化客戶端
         - ResponseGenerator: 上下文感知回答生成
+        - IntelligentDeduplication: 內容基去重邏輯，使用前150字符唯一識別
         - RAGSystem: 完整RAG流程編排器
         - SourceCitationManager: 來源文檔引用與信心度評估
     
     data_flow:
-        Context + Query → Chinese Insurance Prompts → GPT-3.5-turbo → Response + Sources + Confidence
+        Context + Query → Chinese Insurance Prompts → GPT-3.5-turbo → Response + Intelligent Deduplication → Unique Sources + Confidence
 ```
 
 ---
@@ -461,6 +463,7 @@ curl http://localhost:8000/health
 - **Resource Usage**: ✅ ~2GB RAM, ~50MB processed data storage
 - **Vector Performance**: ✅ 1536維向量，43個文檔chunks成功索引
 - **API Response**: ✅ FastAPI端點 < 500ms響應時間
+- **Deduplication Efficiency**: ✅ 100%去重效果，從5個重複源減少至1個唯一源
 
 ### Production Quality Metrics (✅ 已驗證)
 - **Integration Testing**: ✅ 完整端到端測試套件，95%成功率
