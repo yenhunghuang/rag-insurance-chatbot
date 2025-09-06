@@ -194,13 +194,26 @@ class ResponseGenerator:
         Returns:
             Structured ChatbotResponse object.
         """
-        # Extract source information
+        # Extract source information with intelligent deduplication
         sources = []
+        seen_content = set()  # Track content hashes to avoid duplicates
+        
         for result in retrieved_documents:
             doc = result.document
+            clause_number = doc.metadata.get("clause_number", "")
+            
+            # Create content hash for deduplication (use first 150 chars)
+            content_key = doc.content[:150].strip()
+            
+            # Skip if we already have this exact content
+            if content_key in seen_content:
+                continue
+                
+            # Add to seen content
+            seen_content.add(content_key)
             
             source_info = {
-                "clause_number": doc.metadata.get("clause_number", ""),
+                "clause_number": clause_number,
                 "source_file": doc.metadata.get("source_file", ""),
                 "content_snippet": doc.content[:200] + "..." if len(doc.content) > 200 else doc.content,
                 "relevance_score": result.score,
