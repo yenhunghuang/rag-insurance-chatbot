@@ -84,7 +84,7 @@
 
 #### 2. 條款檢索系統 (Priority: P0)
 **功能描述**: 準確檢索相關保險條款片段
-- **檢索方法**: 語義向量檢索 (Sentence-BERT + Faiss)
+- **檢索方法**: 語義向量檢索 (OpenAI Embeddings + Pinecone)
 - **檢索範圍**: 旅遊不便險條款文檔
 - **輸出**: Top-5 相關條款片段
 
@@ -210,7 +210,7 @@
 
 ### A. Technical Stack
 - **後端**: Python, FastAPI
-- **向量檢索**: Faiss, Sentence-Transformers  
+- **向量檢索**: Pinecone, OpenAI Embeddings  
 - **LLM**: OpenAI GPT-3.5-turbo
 - **前端**: Streamlit
 - **容器化**: Docker
@@ -222,7 +222,7 @@
 
 ### C. References
 - OpenAI API Documentation
-- Faiss Vector Database Guide
+- Pinecone Vector Database Guide
 - RAG Implementation Best Practices
 
 ---

@@ -2,7 +2,7 @@
 
 ## A. Technical Stack
 - **後端**: Python, FastAPI
-- **向量檢索**: Faiss, Sentence-Transformers  
+- **向量檢索**: Pinecone, OpenAI Embeddings  
 - **LLM**: OpenAI GPT-3.5-turbo
 - **前端**: Streamlit
 - **容器化**: Docker
@@ -14,7 +14,7 @@
 
 ## C. References
 - OpenAI API Documentation
-- Faiss Vector Database Guide
+- Pinecone Vector Database Guide
 - RAG Implementation Best Practices
 
 ---

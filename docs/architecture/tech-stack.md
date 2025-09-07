@@ -19,9 +19,9 @@ API Client: OpenAI Python SDK
 
 ### AI/ML Stack
 ```yaml
-Vector Database: Faiss (CPU版本)
-  rationale: 高性能、本地部署、無外部依賴
-  alternatives: Pinecone (成本), Weaviate (複雜度)
+Vector Database: Pinecone (雲端托管)
+  rationale: 管理簡化、高可用性、無維護負擔
+  alternatives: Faiss (本地部署), Weaviate (複雜度)
 
 Embedding Model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
   rationale: 多語言支援、效能平衡、模型大小適中
@@ -200,8 +200,8 @@ Development Branches:
   - 緩解: 專業術語預處理
 
 ### Medium Risk  
-- **Faiss效能**: 大量數據時的查詢效能
-  - 緩解: 索引優化與參數調整
+- **Pinecone效能**: 雲端集群可擴展性
+  - 緩解: 索引配置與查詢參數優化
 - **記憶體使用**: 模型載入的記憶體開銷
   - 緩解: lazy loading與資源監控
 
